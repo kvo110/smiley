@@ -1,326 +1,362 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
+// main entry to flutter app
 void main() {
-  runApp(const ShapesDemoApp());
+  runApp(MyApp());
 }
 
-class ShapesDemoApp extends StatelessWidget {
-  const ShapesDemoApp({super.key});
-
+// Stateless Widget is like a blueprint (constructor)
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shapes Drawing Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+      home: DefaultTabController(
+        length: 4,
+        child: _TabsNonScrollableDemo(),
       ),
-      home: const ShapesDemoScreen(),
     );
   }
 }
 
-class ShapesDemoScreen extends StatelessWidget {
-  const ShapesDemoScreen({super.key});
+// keep track of all the controllables (public class)
+class _TabsNonScrollableDemo extends StatefulWidget {
+  @override
+  __TabsNonScrollableDemoState createState() => __TabsNonScrollableDemoState();
+}
+
+// (private class) unchangeable part
+class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
+    with SingleTickerProviderStateMixin, RestorationMixin {
+  late TabController _tabController;
+
+  final RestorableInt tabIndex = RestorableInt(0);
+
+  @override
+  String get restorationId => 'tab_non_scrollable_demo';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(tabIndex, 'tab_index');
+    _tabController.index = tabIndex.value;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+      initialIndex: 0,
+      length: 4,
+      vsync: this,
+    );
+    _tabController.addListener(() {
+      setState(() {
+        tabIndex.value = _tabController.index;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    tabIndex.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+// For the To do task hint: consider defining the widget and name of the tabs here
+    final tabs = ['Text', 'Image', 'Button', 'List View'];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shapes Drawing Demo'),
+        automaticallyImplyLeading: false,
+        title: Text(
+          'Tab App by Kenny G. Vo',
+        ),
+        bottom: TabBar(
+          controller: _tabController,
+          isScrollable: false,
+          tabs: [
+            for (final tab in tabs) Tab(text: tab),
+          ],
+        ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          // Tab 1 color = Light Purple, Title of tab = Text Widget
+          Container(
+            color: Colors.purple[50], // light purple shade range
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Text Widget',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Hello Professor Henry'),
+                            content: Text('I hope you are having a wonderful day and that your leg is feeling better.'),
+                            actions: [
+                              TextButton(
+                                child: Text('Dismiss'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Text('Show Alert'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Tab 2 color = Black, Title of tab = Image Widget
+          Container(
+            color: Colors.black, // black background 
+            child: Center(
+              child: Image.network(
+                'https://images.unsplash.com/photo-1469598614039-ccfeb0a21111?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                width: 500,
+                height: 500, 
+                // loading icon
+                loadingBuilder: (contextm, child, progress) {
+                  if (progress == null) return child;
+                  return CircularProgressIndicator();
+                },
+                // pops an error if image fails to load
+                errorBuilder: (context, child, tracker) => Icon(Icons.error, size: 50, color: Colors.red),
+              ), 
+            ),
+          ),
+          
+          // Tab 3 color = Light Blue, Title of tab = Button Widget
+          Container(
+            color: Colors.blue[50], // light blue shade range
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Button pressed in ${tabs[2]} tab!'),
+                    ),
+                  );
+                },
+                child: Text('Click Me'),
+              ),
+            ),
+          ),
+
+              // Tab 4 color = Light Teal, Title of tab = ListView Widget
+          Container(
+            color: Colors.grey[400], // light teal shade range
+            child: ListView(
+              children: [
+                Card(
+                  child: ExpansionTile(
+                    title: Text('Apple Macbook'),
+                    children: [
+                      ExpansionTile(
+                        title: Text('CPU / Processor'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Apple M1, M2, M3, or M4 chips"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Display'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Retina True Tone, Mini-LED XDR with ProMotion @ 120Hz"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Battery'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 15-22 hours"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Memory'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Unified RAM from 8GB to 12GB"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Storage'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("From 256GB to 8TB"),
+                          ),
+                        ],
+                      ), 
+                    ],
+                  ),
+                ),
+                Card(
+                  child: ExpansionTile(
+                    title: Text('ASUS Zenbook'),
+                    children: [
+                      ExpansionTile(
+                        title: Text('CPU / Processor'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("i5, i7, i9"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Display'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Dual 14 in Lumina OLED touchscreen @ 120Hz"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Battery'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 8 hours"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Memory'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 32GB"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Storage'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 2TB M.2 NVMe PCIe 4.0 SSD"),
+                          ),
+                        ],
+                      ), 
+                    ],
+                  ),
+                ),
+                Card(
+                  child: ExpansionTile(
+                    title: Text('LG Gram'),
+                    children: [
+                      ExpansionTile(
+                        title: Text('CPU / Processor'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("12th Gen i7"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Display'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("15.6 in Full HD (1920 x 1080) IPS Touch, 100% sRGB"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Battery'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 27 hours"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Memory'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 32GB"),
+                          ),
+                        ],
+                      ), 
+                      ExpansionTile(
+                        title: Text('Storage'),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Text("Up to 2TB M.2 NVMe SSD"),
+                          ),
+                        ],
+                      ), 
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+
+      bottomNavigationBar: BottomAppBar (
+        shape: const CircularNotchedRectangle(),
+        color: Colors.black,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Text(
-              'Task 1: Basic Shapes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            IconButton(
+              icon: Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                
+              },
             ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 200,
-              child: CustomPaint(
-                painter: BasicShapesPainter(),
-                size: const Size(double.infinity, 200),
-              ),
+            IconButton(
+              icon: Icon(Icons.search, color: Colors.white),
+              onPressed: () {
+
+              },
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Task 2: Combined Shapes (Abstract Design)',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 300,
-              child: CustomPaint(
-                painter: CombinedShapesPainter(),
-                size: const Size(double.infinity, 300),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Task 3: Styled Shapes',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 300,
-              child: CustomPaint(
-                painter: StyledShapesPainter(),
-                size: const Size(double.infinity, 300),
-              ),
+            IconButton(
+              icon: Icon(Icons.person, color: Colors.white),
+              onPressed: () {
+
+              },
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-class BasicShapesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Determine the center of the canvas
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-    final squareOffset = Offset(centerX - 80, centerY);
-    final circleOffset = Offset(centerX, centerY);
-    final arcOffset = Offset(centerX + 80, centerY);
-    final rectOffset = Offset(centerX - 160, centerY);
-    final lineStart = Offset(centerX - 200, centerY - 50);
-    final lineEnd = Offset(centerX - 140, centerY + 50);
-    final ovalOffset = Offset(centerX + 160, centerY);
-
-    // Draw a square
-    final squarePaint = Paint()
-      ..color = Colors.blue
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromCenter(center: squareOffset, width: 60, height: 60),
-      squarePaint,
-    );
-
-    // Draw a circle
-    final circlePaint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(circleOffset, 30, circlePaint);
-
-    // Draw an arc
-    final arcPaint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5;
-    canvas.drawArc(
-      Rect.fromCenter(center: arcOffset, width: 60, height: 60),
-      0, // start angle in radians
-      2.1, // sweep angle in radians (about 120 degrees)
-      false, // whether to use center
-      arcPaint,
-    );
-
-    // Draw a rectangle
-    final rectPaint = Paint()
-      ..color = Colors.orange
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromCenter(center: rectOffset, width: 80, height: 40),
-      rectPaint,
-    );
-
-    // Draw a line
-    final linePaint = Paint()
-      ..color = Colors.purple
-      ..strokeWidth = 3;
-    canvas.drawLine(lineStart, lineEnd, linePaint);
-
-    // Draw an oval
-    final ovalPaint = Paint()
-      ..color = Colors.teal
-      ..style = PaintingStyle.fill;
-    canvas.drawOval(
-      Rect.fromCenter(center: ovalOffset, width: 80, height: 40),
-      ovalPaint,
-    );
-}
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-class CombinedShapesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-
-    // Background gradient
-    final backgroundGradient = RadialGradient(
-      center: Alignment.center,
-      radius: 0.8,
-      colors: [Colors.blue.shade100, Colors.white],
-    );
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      Paint()..shader = backgroundGradient.createShader(Rect.fromLTWH(0, 0, size.width, size.height)),
-    );
-
-    // Draw a sun (circle with rays)
-    final sunPaint = Paint()
-      ..color = Colors.yellow
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(centerX, centerY - 40), 40, sunPaint);
-
-    // Sun rays (lines)
-    final rayPaint = Paint()
-      ..color = Colors.yellow
-      ..strokeWidth = 3;
-    for (int i = 0; i < 8; i++) {
-      final angle = i * (pi / 4); // Use pi from dart:math
-      final dx = cos(angle) * 60;
-      final dy = sin(angle) * 60;
-      canvas.drawLine(
-        Offset(centerX, centerY - 40),
-        Offset(centerX + dx, centerY - 40 + dy),
-        rayPaint,
-      );
-    }
-
-    // Draw a house (square with triangle roof)
-    final housePaint = Paint()
-      ..color = Colors.brown
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(centerX, centerY + 40), width: 80, height: 80),
-      housePaint,
-    );
-
-    final roofPaint = Paint()
-      ..color = Colors.red
-      ..style = PaintingStyle.fill;
-    final roofPath = Path()
-      ..moveTo(centerX - 60, centerY)
-      ..lineTo(centerX + 60, centerY)
-      ..lineTo(centerX, centerY - 60)
-      ..close();
-    canvas.drawPath(roofPath, roofPaint);
-
-    // Draw a door (rectangle)
-    final doorPaint = Paint()
-      ..color = Colors.blueGrey
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(centerX, centerY + 60), width: 30, height: 50),
-      doorPaint,
-    );
-
-    // Draw windows (squares)
-    final windowPaint = Paint()
-      ..color = Colors.blue.shade200
-      ..style = PaintingStyle.fill;
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(centerX - 25, centerY + 20), width: 20, height: 20),
-      windowPaint,
-    );
-    canvas.drawRect(
-      Rect.fromCenter(center: Offset(centerX + 25, centerY + 20), width: 20, height: 20),
-      windowPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
-}
-
-class StyledShapesPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final centerX = size.width / 2;
-    final centerY = size.height / 2;
-
-    // Draw a gradient-filled rectangle
-    final rectGradient = LinearGradient(
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
-      colors: [Colors.red, Colors.blue],
-    );
-    final rect = Rect.fromCenter(center: Offset(centerX, centerY - 100), width: 200, height: 60);
-    canvas.drawRect(
-      rect,
-      Paint()
-        ..shader = rectGradient.createShader(rect)
-        ..style = PaintingStyle.fill,
-    );
-
-    // Draw a circle with a border
-    final circlePaint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.fill;
-    final circleBorderPaint = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4;
-    canvas.drawCircle(Offset(centerX - 80, centerY), 40, circlePaint);
-    canvas.drawCircle(Offset(centerX - 80, centerY), 40, circleBorderPaint);
-
-    // Draw a transparent oval
-    final ovalPaint = Paint()
-      ..color = Colors.purple.withOpacity(0.5)
-      ..style = PaintingStyle.fill;
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(centerX + 80, centerY), width: 100, height: 60),
-      ovalPaint,
-    );
-
-    // Draw a dashed line using a custom path effect
-    final dashPaint = Paint()
-      ..color = Colors.orange
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-    
-    // We draw a series of short lines and spaces
-    final path = Path();
-    double startX = centerX - 100;
-    const dashLength = 10.0;
-    const spaceLength = 5.0;
-    while (startX < centerX + 100) {
-      path.moveTo(startX, centerY + 80);
-      path.lineTo(min(startX + dashLength, centerX + 100), centerY + 80);
-      startX += dashLength + spaceLength;
-    }
-    canvas.drawPath(path, dashPaint);
-
-    // Draw a gradient arc
-    final arcGradient = SweepGradient(
-      center: Alignment.centerRight,
-      startAngle: 0,
-      endAngle: pi, // Use pi from dart:math
-      colors: [Colors.red, Colors.yellow, Colors.green],
-    );
-    final arcRect = Rect.fromCenter(center: Offset(centerX, centerY + 100), width: 120, height: 120);
-    final arcPaint = Paint()
-      ..shader = arcGradient.createShader(arcRect)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.round;
-    canvas.drawArc(
-      Rect.fromCenter(center: Offset(centerX, centerY + 100), width: 100, height: 100),
-      0, // start angle
-      2.5, // sweep angle
-      false,
-      arcPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
   }
 }
