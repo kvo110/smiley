@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 // main entry to flutter app
@@ -84,45 +85,16 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Tab 1 color = Light Purple, Title of tab = Text Widget
+          // Tab 1 Smiley Face
           Container(
-            color: Colors.purple[50], // light purple shade range
+            color: Colors.purple[50],
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Text Widget',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Hello Professor Henry'),
-                            content: Text('I hope you are having a wonderful day and that your leg is feeling better.'),
-                            actions: [
-                              TextButton(
-                                child: Text('Dismiss'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Text('Show Alert'),
-                  ),
-                ],
+              child: CustomPaint(
+                painter: SmileyPainter(),
+                child: Container(
+                  width: 400,
+                  height: 400,
+                ),
               ),
             ),
           ),
@@ -359,4 +331,32 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       ),
     );
   }
+}
+
+// Smiley Face Painter
+class SmileyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = 80.0;
+
+    final facePaint = Paint()..color = Colors.yellow;
+    canvas.drawCircle(center, radius, facePaint);
+
+    final eyePaint = Paint()..color = Colors.black;
+    canvas.drawCircle(center + Offset(-30, -30), 10, eyePaint);
+    canvas.drawCircle(center + Offset(30, -30), 10, eyePaint);
+
+    final smileRect = Rect.fromCircle(center: center + Offset(0, 10), radius: 50);
+    final smilePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round; 
+
+    canvas.drawArc(smileRect, pi / 6, 2 * pi / 3, false, smilePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
