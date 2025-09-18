@@ -35,6 +35,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   // Select emoji state
   String selectedEmoji = 'Smiley Face';
   String userEmoji = '';
+  bool showSteam = false;
 
   @override
   String get restorationId => 'tab_non_scrollable_demo';
@@ -97,7 +98,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                 SizedBox(height: 20),
                 DropdownButton<String>(
                   value: selectedEmoji,
-                  items: <String>['Smiley Face', 'Party Face', 'Heart', 'User Input'].map<DropdownMenuItem<String>>((String value) {
+                  items: <String>['Smiley Face', 'Party Face', 'Heart', 'Angry Face', 'User Input'].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -109,6 +110,16 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                     });
                   },
                 ),
+
+                if (selectedEmoji == 'Angry Face')
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        showSteam = !showSteam;
+                      });
+                    },
+                    child : Text(showSteam ? 'Hide Steam' : 'View Steam'),
+                  ),
                 if (selectedEmoji == 'User Input')
                   Padding(
                     padding:
@@ -128,7 +139,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                 SizedBox(height: 10),
                 Expanded(
                   child: CustomPaint(
-                    painter: DynamicEmojiPainter(selectedEmoji, userEmoji),
+                    painter: DynamicEmojiPainter(selectedEmoji, userEmoji, showSteam),
                     child: Container(),
                   ),
                 ),
@@ -186,8 +197,9 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
 class DynamicEmojiPainter extends CustomPainter {
   final String emoji;
   final String userEmoji;
+  final bool showSteam;
 
-  DynamicEmojiPainter(this.emoji, [this.userEmoji = '']);
+  DynamicEmojiPainter(this.emoji, [this.userEmoji = '', this.showSteam = false]);
 
   @override 
   void paint(Canvas canvas, Size size) {
@@ -282,6 +294,64 @@ class DynamicEmojiPainter extends CustomPainter {
       }
 
     // Gives the user the ability to add their own emoji to be drawn
+    } else if (emoji == 'Angry Face') {
+      final facePaint = Paint()
+        ..shader = RadialGradient(
+          colors: [Colors.red.shade900, Colors.orange.shade600],
+          center: Alignment.center,
+          radius: 1.0,
+        ).createShader(Rect.fromCircle(center: center, radius: radius));
+
+      // Face
+      canvas.drawCircle(center, radius, facePaint);
+
+      // Draw the eyes
+      final eyePaint = Paint()..color = Colors.black;
+
+      final leftEye = Rect.fromCenter(center: center + Offset(-30, -20), width: 20, height: 30);
+      final rightEye = Rect.fromCenter(center: center + Offset(30, -20), width: 20, height: 30);
+      canvas.drawOval(leftEye, eyePaint);
+      canvas.drawOval(rightEye, eyePaint);
+
+      // Draw angry eyebrows
+      final eyebrowPaint = Paint()
+        ..color = Colors.black
+        ..strokeWidth = 9
+        ..strokeCap = StrokeCap.butt;
+
+      canvas.drawLine(center + Offset(-50, -40), center + Offset(-10, -30), eyebrowPaint);
+      canvas.drawLine(center + Offset(10, -30), center + Offset(50, -40), eyebrowPaint);
+
+      // Draw the frown
+      final mouthPaint = Paint()
+        ..color = Colors.black
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8;
+      final mouthRect = Rect.fromCircle(center: center + Offset(0, 60), radius: 40);
+      canvas.drawArc(mouthRect, pi + pi / 6, pi - pi / 3, false, mouthPaint);
+
+      // Steam upon user's enable
+      if (showSteam) {
+        for (int i = -1; i <= 1; i += 2) {
+          final steam1 = center + Offset(i * 70, -60);
+          final steam2 = center + Offset(i * 80, -80);
+          final steam3 = center + Offset(i * 90, -105);
+
+          final steamPuffs = [steam1, steam2, steam3];
+          final puffRadius = [15.0, 20.0, 25.0];
+
+          for (int j = 0; j < steamPuffs.length; j++) {
+            final gradient = RadialGradient(
+              colors: [Colors.grey.shade300, Colors.grey.shade600],
+              center: Alignment.center,
+              radius: 0.5,
+            );
+            final paint = Paint()
+              ..shader = gradient.createShader(Rect.fromCircle(center: steamPuffs[j], radius: puffRadius[j]));
+            canvas.drawCircle(steamPuffs[j], puffRadius[j], paint);
+          }
+        }
+      }
     } else if (emoji == 'User Input' && userEmoji.isNotEmpty) {
       final textPainter = TextPainter(
         text: TextSpan(
