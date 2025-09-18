@@ -1,3 +1,5 @@
+//Team members: Ahmed Arshad &  Kenny G. Vo
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 
@@ -95,62 +97,80 @@ class DynamicEmojiPainter extends CustomPainter {
         }
       }
 
-    // Draws a heart
-    // Draws a heart
-} else if (emoji == 'Heart') {
-  final paint = Paint()
-    ..style = PaintingStyle.fill
-    ..shader = RadialGradient(
-      colors: [Colors.red[300]!, Colors.red[600]!, Colors.red[800]!],
-      center: Alignment.topCenter,
-      radius: 1.0,
-    ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-  final path = Path();
-  
-  final width = size.width * 0.6; 
-  final height = size.height * 0.6; 
-  
-  final offsetX = (size.width - width) / 2;
-  final offsetY = (size.height - height) / 2;
-  
-  path.moveTo(offsetX + width / 2, offsetY + height * 0.85);
-  
-  // Adjusted control points for the left side
-  path.cubicTo(
-    offsetX + width * 0.1, offsetY + height * 0.5, // control point 1
-    offsetX, offsetY + height * 0.25, // control point 2
-    offsetX + width * 0.5, offsetY + height * 0.25 // end point (top center)
-  );
-  
-  // This top-left arc is no longer needed since the previous cubicTo does the job
-  // path.cubicTo(
-  //   offsetX + width * 0.35, offsetY + height * 0.05,
-  //   offsetX + width * 0.45, offsetY + height * 0.05,
-  //   offsetX + width / 2, offsetY + height * 0.25
-  // );
-  
-  // Adjusted control points for the right side
-  path.cubicTo(
-    offsetX + width, offsetY + height * 0.25, // control point 1
-    offsetX + width * 0.9, offsetY + height * 0.5, // control point 2
-    offsetX + width / 2, offsetY + height * 0.85 // back to bottom point
-  );
-  
-  path.close();
-  canvas.drawPath(path, paint);
-  
-  final outlinePaint = Paint()
-    ..color = Colors.red[900]!
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 3;
-  canvas.drawPath(path, outlinePaint);
-  
-  final highlightPaint = Paint()
-    ..color = Colors.white.withOpacity(0.3)
-    ..style = PaintingStyle.fill;
-  final highlightPath = Path();
-  highlightPath.addOval(Rect.fromLTWH(offsetX + width * 0.3, offsetY + height * 0.2, width * 0.2, height * 0.15));
-  canvas.drawPath(highlightPath, highlightPaint);
+    
+   
+ /// Draws a heart
+    } else if (emoji == 'Heart') {
+      final paint = Paint()
+        ..style = PaintingStyle.fill
+        ..shader = RadialGradient(
+          colors: [Colors.red[300]!, Colors.red[600]!, Colors.red[800]!],
+          center: Alignment.topCenter,
+          radius: 1.0,
+        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      final path = Path();
+      
+      //heart shape 
+      final width = size.width * 0.6; 
+      final height = size.height * 0.6; 
+      
+      // Center the smaller heart
+      final offsetX = (size.width - width) / 2;
+      final offsetY = (size.height - height) / 2;
+      
+      // Start from the bottom point of the heart
+      path.moveTo(offsetX + width / 2, offsetY + height * 0.85);
+      
+      // Left side of heart 
+      path.cubicTo(
+        offsetX + width * 0.2, offsetY + height * 0.6,  // control point 1
+        offsetX + width * 0.1, offsetY + height * 0.3,  // control point 2
+        offsetX + width * 0.25, offsetY + height * 0.15  // end point (left bump top)
+      );
+      
+      // Top left arc
+      path.cubicTo(
+        offsetX + width * 0.35, offsetY + height * 0.05,
+        offsetX + width * 0.45, offsetY + height * 0.05,
+        offsetX + width / 2, offsetY + height * 0.25
+      );
+      
+      // Top right arc
+      path.cubicTo(
+        offsetX + width * 0.55, offsetY + height * 0.05,
+        offsetX + width * 0.65, offsetY + height * 0.05,
+        offsetX + width * 0.75, offsetY + height * 0.15
+      );
+      
+      // Right side of heart 
+      path.cubicTo(
+        offsetX + width * 0.9, offsetY + height * 0.3,   // control point 1
+        offsetX + width * 0.8, offsetY + height * 0.6,   // control point 2
+        offsetX + width / 2, offsetY + height * 0.85     // back to bottom point
+      );
+      
+      path.close();
+      
+      // Draw the heart
+      canvas.drawPath(path, paint);
+      
+      // Add a subtle shadow/outline
+      final outlinePaint = Paint()
+        ..color = Colors.red[900]!
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3;
+        
+      canvas.drawPath(path, outlinePaint);
+      
+      // Add a highlight
+      final highlightPaint = Paint()
+        ..color = Colors.white.withOpacity(0.3)
+        ..style = PaintingStyle.fill;
+        
+      final highlightPath = Path();
+      highlightPath.addOval(Rect.fromLTWH(offsetX + width * 0.3, offsetY + height * 0.2, width * 0.2, height * 0.15));
+      canvas.drawPath(highlightPath, highlightPaint);
 
     // Draws a party face with the party hat and confetti
     } else if (emoji == 'Party Face') {
@@ -273,7 +293,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Emoji App by Kenny G. Vo'),
+          title: Text('Emoji App by Kenny G. Vo & Ahmed Arshad'),
           backgroundColor: Colors.blue[600],
         ),
         body: Container(
