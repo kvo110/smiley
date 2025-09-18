@@ -282,7 +282,7 @@ class DynamicEmojiPainter extends CustomPainter {
       }
 
     // Gives the user the ability to add their own emoji to be drawn
-    } else if (emoji == 'Custom Emoji' && userEmoji.isNotEmpty) {
+    } else if (emoji == 'User Input' && userEmoji.isNotEmpty) {
       final textPainter = TextPainter(
         text: TextSpan(
           text: userEmoji,
