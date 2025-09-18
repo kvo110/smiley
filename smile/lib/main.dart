@@ -196,7 +196,13 @@ class DynamicEmojiPainter extends CustomPainter {
 
     // Draws a smiley face
     if (emoji == 'Smiley Face') {
-      final facePaint = Paint()..color = Colors.yellow;
+      final facePaint = Paint()
+        ..shader = RadialGradient(
+          colors: [Colors.yellow.shade300, Colors.orange.shade700],
+          center: Alignment.topLeft,
+          radius: 1.0,
+        ).createShader(Rect.fromCircle(center: center, radius: radius));
+
       canvas.drawCircle(center, radius, facePaint);
 
       final eyePaint = Paint()..color = Colors.black;
@@ -222,11 +228,11 @@ class DynamicEmojiPainter extends CustomPainter {
       final x = center.dx;
       final y = center.dy;
 
-      path.moveTo(x, y + 40);
+      path.moveTo(x, y + 60); // bottom tip of the heart
 
-      path.cubicTo(x - 50, y + 10, x - 50, y - 30, x, y - 10);
+      path.cubicTo(x - 60, y + 20, x - 60, y - 70, x, y - 20); // left heart lobe
       
-      path.cubicTo(x + 50, y - 30, x + 50, y + 10, x, y + 40);
+      path.cubicTo(x + 60, y - 70, x + 60, y + 20, x, y + 60); // right heart lobe
       
       canvas.drawPath(path, paint);
 
