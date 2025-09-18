@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 // main entry to flutter app
@@ -28,7 +29,6 @@ class _TabsNonScrollableDemo extends StatefulWidget {
 class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     with SingleTickerProviderStateMixin, RestorationMixin {
   late TabController _tabController;
-
   final RestorableInt tabIndex = RestorableInt(0);
 
   @override
@@ -64,14 +64,14 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
 
   @override
   Widget build(BuildContext context) {
-// For the To do task hint: consider defining the widget and name of the tabs here
-    final tabs = ['Text', 'Image', 'Button', 'List View'];
+    // For the To do task hint: consider defining the widget and name of the tabs here
+    final tabs = ['Text', 'Party', 'Heart', 'Emoji Dropbox'];
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'Tab App by Kenny G. Vo',
+          'Emoji Box',
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -84,86 +84,194 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Tab 1 color = Light Purple, Title of tab = Text Widget
+          // Tab 1 Smiley Face
           Container(
-            color: Colors.purple[50], // light purple shade range
+            color: Colors.purple[50],
+            child: Center(
+              child: CustomPaint(
+                painter: SmileyPainter(),
+                child: Container(
+                  width: 400,
+                  height: 400,
+                ),
+              ),
+            ),
+          ),
+          
+          // Tab 2:  Party Emoji 
+          Container(
+            color: Colors.yellow[50], // Confetti background type
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Text Widget',
+                    'Party Time! ',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.purple[800],
                     ),
                   ),
-                  SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Hello Professor Henry'),
-                            content: Text('I hope you are having a wonderful day and that your leg is feeling better.'),
-                            actions: [
-                              TextButton(
-                                child: Text('Dismiss'),
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
+                  SizedBox(height: 20),
+                  SizedBox(
+                    width: 250,
+                    height: 300,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // This holdsFloating confetti particles
+                        ...List.generate(20, (index) {
+                          final random = (i) => (i * 37 + 13) % 250;
+                          return Positioned(
+                            top: (random(index) % 280).toDouble(),
+                            left: (random(index + 7) % 230).toDouble(),
+                            child: Transform.rotate(
+                              angle: (index * 0.5),
+                              child: Container(
+                                width: 12,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(3),
+                                  color: Colors.primaries[index % Colors.primaries.length],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                        
+                        // Main smiley 
+                        Container(
+                          width: 160,
+                          height: 160,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.yellow[600],
+                            border: Border.all(color: Colors.orange[800]!, width: 4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
                               ),
                             ],
-                          );
-                        },
-                      );
-                    },
-                    child: Text('Show Alert'),
+                          ),
+                          child: Stack(
+                            children: [
+                              // Left Eye (excited)
+                              Positioned(
+                                top: 35,
+                                left: 35,
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              // Right Eye (wink)
+                              Positioned(
+                                top: 42,
+                                right: 35,
+                                child: Container(
+                                  width: 30,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                ),
+                              ),
+                              // Big smile
+                              Positioned(
+                                bottom: 25,
+                                left: 25,
+                                right: 25,
+                                child: Container(
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.black,
+                                        width: 5,
+                                      ),
+                                    ),
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(110),
+                                      bottomRight: Radius.circular(110),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Party Hat ***check the hat adjustment 
+                        Positioned(
+                          top: -20,
+                          child: Transform.rotate(
+                            angle: -0.3,
+                            child: CustomPaint(
+                              size: const Size(80, 80),
+                              painter: _PartyHatPainter(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
           ),
           
-          // Tab 2 color = Black, Title of tab = Image Widget
+          // Tab 3: Heart with Button Widget
           Container(
-            color: Colors.black, // black background 
+            color: Colors.pink[50],
             child: Center(
-              child: Image.network(
-                'https://images.unsplash.com/photo-1469598614039-ccfeb0a21111?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                width: 500,
-                height: 500, 
-                // loading icon
-                loadingBuilder: (contextm, child, progress) {
-                  if (progress == null) return child;
-                  return CircularProgressIndicator();
-                },
-                // pops an error if image fails to load
-                errorBuilder: (context, child, tracker) => Icon(Icons.error, size: 50, color: Colors.red),
-              ), 
-            ),
-          ),
-          
-          // Tab 3 color = Light Blue, Title of tab = Button Widget
-          Container(
-            color: Colors.blue[50], // light blue shade range
-            child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Button pressed in ${tabs[2]} tab!'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Heart Widget ',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[800],
                     ),
-                  );
-                },
-                child: Text('Click Me'),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  CustomPaint(
+                    size: Size(150, 135),
+                    painter: _HeartPainter(),
+                  ),
+                  SizedBox(height: 30),
+                  
+                  ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Button pressed in ${tabs[2]} tab!'),
+                          backgroundColor: Colors.red[400],
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red[400],
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text('Click Me'),
+                  ),
+                ],
               ),
             ),
           ),
 
-              // Tab 4 color = Light Teal, Title of tab = ListView Widget
+          // Tab 4 color = Light Teal, Title of tab = ListView Widget
           Container(
             color: Colors.grey[400], // light teal shade range
             child: ListView(
@@ -329,7 +437,6 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
           ),
         ],
       ),
-
       bottomNavigationBar: BottomAppBar (
         shape: const CircularNotchedRectangle(),
         color: Colors.black,
@@ -345,13 +452,11 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
             IconButton(
               icon: Icon(Icons.search, color: Colors.white),
               onPressed: () {
-
               },
             ),
             IconButton(
               icon: Icon(Icons.person, color: Colors.white),
               onPressed: () {
-
               },
             ),
           ],
@@ -359,4 +464,148 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       ),
     );
   }
+}
+
+// Original Smiley Face Painter
+class SmileyPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = 80.0;
+    final facePaint = Paint()..color = Colors.yellow;
+    canvas.drawCircle(center, radius, facePaint);
+    final eyePaint = Paint()..color = Colors.black;
+    canvas.drawCircle(center + Offset(-30, -30), 10, eyePaint);
+    canvas.drawCircle(center + Offset(30, -30), 10, eyePaint);
+    final smileRect = Rect.fromCircle(center: center + Offset(0, 10), radius: 50);
+    final smilePaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..strokeCap = StrokeCap.round; 
+    canvas.drawArc(smileRect, pi / 6, 2 * pi / 3, false, smilePaint);
+  }
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Party Hat Painter
+class _PartyHatPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..shader = LinearGradient(
+        colors: [Colors.purple, Colors.pink, Colors.orange, Colors.yellow],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final path = Path();
+    path.moveTo(size.width / 2, 0); // top point
+    path.lineTo(0, size.height); // bottom left
+    path.lineTo(size.width, size.height); // bottom right
+    path.close();
+
+    canvas.drawPath(path, paint);
+
+    // Add colorful stripes on hat
+    final stripePaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4;
+
+    for (double i = size.height; i > 0; i -= 12) {
+      canvas.drawLine(
+        Offset(0, i),
+        Offset(size.width, i - 8),
+        stripePaint,
+      );
+    }
+
+    // Addition of more confetti on top
+    final pomPaint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(Offset(size.width / 2, 5), 8, pomPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Heart Painter
+class _HeartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill
+      ..shader = RadialGradient(
+        colors: [Colors.red[300]!, Colors.red[600]!, Colors.red[800]!],
+        center: Alignment.topCenter,
+        radius: 1.0,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final path = Path();
+    
+    // Created heart shape using mathematical curves
+    final width = size.width;
+    final height = size.height;
+    
+    // this starts from the bottom
+    path.moveTo(width / 2, height * 0.85);
+    
+    // Left side of heart 
+    path.cubicTo(
+      width * 0.2, height * 0.6,  // control point 1
+      width * 0.1, height * 0.3,  // control point 2
+      width * 0.25, height * 0.15  // end point (left bump top)
+    );
+    
+    // Top left arc
+    path.cubicTo(
+      width * 0.35, height * 0.05,
+      width * 0.45, height * 0.05,
+      width / 2, height * 0.25
+    );
+    
+    // Top right arc
+    path.cubicTo(
+      width * 0.55, height * 0.05,
+      width * 0.65, height * 0.05,
+      width * 0.75, height * 0.15
+    );
+    
+    // Right side of heart (bezier curve)
+    path.cubicTo(
+      width * 0.9, height * 0.3,   // control point 1
+      width * 0.8, height * 0.6,   // control point 2
+      width / 2, height * 0.85     // back to bottom point
+    );
+    
+    path.close();
+    
+    // this draws the heart
+    canvas.drawPath(path, paint);
+    
+    // Add a subtle shadow/outline
+    final outlinePaint = Paint()
+      ..color = Colors.red[900]!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+      
+    canvas.drawPath(path, outlinePaint);
+    
+    // Add a highlight
+    final highlightPaint = Paint()
+      ..color = Colors.white.withOpacity(0.3)
+      ..style = PaintingStyle.fill;
+      
+    final highlightPath = Path();
+    highlightPath.addOval(Rect.fromLTWH(width * 0.3, height * 0.2, width * 0.2, height * 0.15));
+    canvas.drawPath(highlightPath, highlightPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
